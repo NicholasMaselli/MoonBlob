@@ -35,3 +35,6 @@ sysinfo.txt
 *.ide-shm
 *.ide
 *.lock
+
+# Custom Git Ignore
+**/ThirdPartyAssets/**
