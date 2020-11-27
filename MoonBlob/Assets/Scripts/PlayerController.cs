@@ -122,10 +122,25 @@ public class PlayerController : MonoBehaviour
         return dashVector;
     }
 
+    private void Gravity()
+    {
+        Transform moon = GameManager.instance.moon;
+        Vector3 gravityDirection = new Vector3(transform.position.x - moon.position.x, transform.position.y - moon.position.y, transform.position.z - moon.position.z).normalized;
+
+
+        Debug.Log(gravityDirection);
+        //playerRigidBody.AddForce(-gravityDirection * Time.deltaTime * 9.81f);
+        playerRigidBody.AddForce(Vector3.down * 9.81f);
+    }
+
     private void CalculateVelocity()
     {
         grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        
+        // Apply Moon Gravity
+        Gravity();
 
+        // Get Dash Velocity
         Vector3 dash = Dash();
 
         // Apply Velocity to the rigid body while also handling collisions
