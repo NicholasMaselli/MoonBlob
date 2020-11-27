@@ -87,6 +87,8 @@ public class PlayerController : MonoBehaviour
 
         // Applies velocity movement while also handling collisions
         playerRigidBody.MovePosition(transform.position + velocity);
+
+        // Rotate player to be normal to the surface
     }
 
     private void Jump()
@@ -127,10 +129,8 @@ public class PlayerController : MonoBehaviour
         Transform moon = GameManager.instance.moon;
         Vector3 gravityDirection = new Vector3(transform.position.x - moon.position.x, transform.position.y - moon.position.y, transform.position.z - moon.position.z).normalized;
 
-
         Debug.Log(gravityDirection);
-        //playerRigidBody.AddForce(-gravityDirection * Time.deltaTime * 9.81f);
-        playerRigidBody.AddForce(Vector3.down * 9.81f);
+        playerRigidBody.AddForce(-gravityDirection * 9.81f);
     }
 
     private void CalculateVelocity()
