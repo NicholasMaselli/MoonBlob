@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private bool sprinting;
     private bool dashLeft;
     private bool dashRight;
+    private bool shoot;
 
     [Header("Movement Variables")]
     public float speed;
@@ -37,6 +38,9 @@ public class PlayerController : MonoBehaviour
     public float dashSpeed = 5;
     private bool readyToDash = true;
 
+    [Header("Shooting Variables")]
+    public GameObject bulletPrefab;
+
     //-----------------------------------------------------------------------------------//
     //PlayerController Initialization and Update
     //-----------------------------------------------------------------------------------//
@@ -48,7 +52,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask, QueryTriggerInteraction.Ignore);
         GetPlayerInput();
         Look();
 
@@ -58,6 +62,11 @@ public class PlayerController : MonoBehaviour
             Jump();
         }
         Dash();
+
+        if (shoot)
+        {
+            Shoot();
+        }
     }
 
     private void FixedUpdate()
@@ -74,6 +83,8 @@ public class PlayerController : MonoBehaviour
         jumping = Input.GetButtonDown("Jump");
         dashLeft = Input.GetButtonDown("Dash Left");
         dashRight = Input.GetButtonDown("Dash Right");
+
+        shoot = Input.GetMouseButtonDown(0);
     }
     //-----------------------------------------------------------------------------------//
 
@@ -144,6 +155,18 @@ public class PlayerController : MonoBehaviour
         //Perform the rotations
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
         transform.Rotate(Vector3.up * yRotation);
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
+    //Shooting Functions
+    //-----------------------------------------------------------------------------------//
+    public void Shoot()
+    {
+        GameObject bulletGO = Instantiate(bulletPrefab, transform.position + (0.25f * transform.forward) + (0.15f * transform.up), transform.rotation);
+        Bullet bullet = bulletGO.GetComponent<Bullet>();
+        bullet.bulletRigidBody.velocity = transform.forward * bullet.speed;
+        bullet.playerController = this;
     }
     //-----------------------------------------------------------------------------------//
 

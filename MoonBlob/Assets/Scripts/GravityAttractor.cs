@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class GravityAttractor : MonoBehaviour
 {
-    public float gravitationalConstant = -9.81f;
+    public float gravitationalConstant = -5.0f;  //-9.81f;
     public Collider trigger;
+
+    public Vector3 gravityDirection;
 
     //-----------------------------------------------------------------------------------//
     //Attraction Logic
@@ -15,7 +17,7 @@ public class GravityAttractor : MonoBehaviour
         //Vector3 pullVector = FindSurface(attractedBody);
         //OrientBody(attractedBody, pullVector);
 
-        Vector3 gravityDirection = (attractedBody.transform.position - transform.position).normalized;
+        gravityDirection = (attractedBody.transform.position - transform.position).normalized;
         OrientBodyOppositeGravity(attractedBody, gravityDirection);
         attractedBody.AddForce(gravitationalConstant * gravityDirection);
     }
@@ -44,8 +46,6 @@ public class GravityAttractor : MonoBehaviour
     private void OrientBody(Rigidbody attractedBody, Vector3 surfaceNormal)
     {
         attractedBody.transform.rotation = Quaternion.FromToRotation(attractedBody.transform.up, surfaceNormal) * attractedBody.rotation;
-    }
-
-    
+    }    
     //-----------------------------------------------------------------------------------//
 }

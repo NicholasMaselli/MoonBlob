@@ -23,7 +23,7 @@ public class GravityBody : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     //Change Planet Functions
     //-----------------------------------------------------------------------------------//
-    public void OnTriggerEnter(Collider collider)
+    private void OnTriggerEnter(Collider collider)
     {
         if (collider?.transform != gravityAttractor?.transform)
         {
