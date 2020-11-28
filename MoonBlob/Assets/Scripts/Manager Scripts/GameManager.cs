@@ -6,8 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    [Header("Map Variables")]
-    public Transform moon;
+    public GravityAttractor initialMoon;
 
     private void Awake()
     {

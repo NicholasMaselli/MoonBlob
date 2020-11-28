@@ -57,8 +57,10 @@
   <ItemGroup>
     <Compile Include="Assets\ThirdPartyAssets\SpaceSkies Free\Demo\Scripts\LookCamera.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
-    <Compile Include="Assets\ThirdPartyAssets\SpaceSkies Free\Demo\Scripts\SkyboxChanger.cs" />
     <Compile Include="Assets\Scripts\Manager Scripts\GameManager.cs" />
+    <Compile Include="Assets\ThirdPartyAssets\SpaceSkies Free\Demo\Scripts\SkyboxChanger.cs" />
+    <Compile Include="Assets\Scripts\GravityBody.cs" />
+    <Compile Include="Assets\Scripts\GravityAttractor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

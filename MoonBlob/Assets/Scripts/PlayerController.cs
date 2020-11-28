@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using TMPro;
+﻿using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -20,7 +18,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement Variables")]
     public float speed;
-    private Vector3 velocity;
 
     [Header("Rotation Variables")]
     private float xRotation;
@@ -51,8 +48,16 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         GetPlayerInput();
         Look();
+
+        // Jumping and dashing in Update because they are single physics actions
+        if (jumping)
+        {
+            Jump();
+        }
+        Dash();
     }
 
     private void FixedUpdate()
@@ -66,10 +71,9 @@ public class PlayerController : MonoBehaviour
         y = Input.GetAxisRaw("Vertical");
         mouseHorizontal = Input.GetAxis("Mouse X");
         mouseVertical = Input.GetAxis("Mouse Y");
-        jumping = Input.GetButton("Jump");
-
-        dashLeft = Input.GetButton("Dash Left");
-        dashRight = Input.GetButton("Dash Right");
+        jumping = Input.GetButtonDown("Jump");
+        dashLeft = Input.GetButtonDown("Dash Left");
+        dashRight = Input.GetButtonDown("Dash Right");
     }
     //-----------------------------------------------------------------------------------//
 
@@ -78,36 +82,28 @@ public class PlayerController : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     private void Move()
     {
-        if (jumping)
-        {
-            Jump();
-        }
-
-        CalculateVelocity();
-
-        // Applies velocity movement while also handling collisions
+        PlayerMovement();
+    }
+    private void PlayerMovement()
+    {
+        Vector3 direction = (transform.forward * y) + (transform.right * x).normalized;
+        Vector3 velocity = direction * speed * Time.fixedDeltaTime;
         playerRigidBody.MovePosition(transform.position + velocity);
-
-        // Rotate player to be normal to the surface
     }
 
     private void Jump()
     {
-        if (!grounded) return;
-        
+        if (!grounded) return;        
         grounded = false;
 
         // Apply jump forces
-        playerRigidBody.AddForce(Vector3.up * jumpForce * 1.5f);
+        playerRigidBody.AddForce(transform.up * jumpForce * 1.5f);
         jumping = false;   
     }
 
-    private Vector3 Dash()
+    private void Dash()
     {
-        if (!readyToDash || (!dashLeft && !dashRight))
-        {
-            return Vector3.zero;
-        }
+        if (!readyToDash || (!dashLeft && !dashRight)) return;
         readyToDash = false;
 
         Vector3 dashVector = Vector3.zero;
@@ -121,31 +117,7 @@ public class PlayerController : MonoBehaviour
         }
 
         Invoke(nameof(ResetDash), dashCooldown);
-        return dashVector;
-    }
-
-    private void Gravity()
-    {
-        Transform moon = GameManager.instance.moon;
-        Vector3 gravityDirection = new Vector3(transform.position.x - moon.position.x, transform.position.y - moon.position.y, transform.position.z - moon.position.z).normalized;
-
-        Debug.Log(gravityDirection);
-        playerRigidBody.AddForce(-gravityDirection * 9.81f);
-    }
-
-    private void CalculateVelocity()
-    {
-        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        
-        // Apply Moon Gravity
-        Gravity();
-
-        // Get Dash Velocity
-        Vector3 dash = Dash();
-
-        // Apply Velocity to the rigid body while also handling collisions
-        Vector3 direction = (transform.forward * y) + (transform.right * x);
-        velocity = (direction * speed * Time.fixedDeltaTime) + dash;
+        playerRigidBody.MovePosition(transform.position + dashVector);
     }
 
     private void ResetDash()
