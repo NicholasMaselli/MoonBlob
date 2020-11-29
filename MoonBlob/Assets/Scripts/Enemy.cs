@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +7,13 @@ public class Enemy : Entity
     //-----------------------------------------------------------------------------------//
     //Enemy Initialization and Update
     //-----------------------------------------------------------------------------------//
+    public override void Start()
+    {
+        base.Start(); 
+        healthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
+        healthText.text = String.Format("{0} / {1}", (int)entityData.health, (int)entitySO.health);
+    }
+
     protected override void Update()
     {
         GetEnemyInput();
@@ -57,6 +64,17 @@ public class Enemy : Entity
     }
     //-----------------------------------------------------------------------------------//
 
+    //-----------------------------------------------------------------------------------//
+    //Damage Functions
+    //-----------------------------------------------------------------------------------//
+    public override void DealDamage(int damage)
+    {
+        base.DealDamage(damage);
+        healthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
+        healthText.text = String.Format("{0} / {1}", (int)entityData.health, (int)entitySO.health);
+    }
+    //-----------------------------------------------------------------------------------//
+    
     //-----------------------------------------------------------------------------------//
     //Collision Functions
     //-----------------------------------------------------------------------------------//

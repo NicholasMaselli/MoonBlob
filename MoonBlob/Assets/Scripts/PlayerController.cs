@@ -9,7 +9,11 @@ public class PlayerController : Entity
     [Header("Player Camera")]
     public Camera playerCamera;
 
-    [Header("Graphics Functions")]
+    [Header("Energy Variables")]
+    protected float energyGainTime = 1.0f;
+    protected float energyGainElapsedTime = 0.0f;
+
+    [Header("Graphics Variables")]
     public Image UIhealthBar;
     public TextMeshProUGUI UIhealthText;
     public Image UIenergyBar;
@@ -23,6 +27,11 @@ public class PlayerController : Entity
         base.Start();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        UIhealthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
+        UIhealthText.text = String.Format("{0} / {1}", (int)entityData.health, (int)entitySO.health);
+        UIenergyBar.fillAmount = (float)entityData.energy / (float)entitySO.energy;
+        UIenergyText.text = String.Format("{0} / {1}", (int)entityData.energy, (int)entitySO.energy);
     }
 
     protected override void Update()
@@ -30,7 +39,14 @@ public class PlayerController : Entity
         GetPlayerInput();
         Look();
         base.Update();
-    }    
+
+        energyGainElapsedTime += Time.deltaTime;
+        if (energyGainElapsedTime > energyGainTime)
+        {
+            UpdateEnergy(entityData.energyGainRate);
+            energyGainElapsedTime = 0.0f;
+        }
+    }
 
     private void GetPlayerInput()
     {
@@ -47,15 +63,28 @@ public class PlayerController : Entity
     //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
+    //Movement Functions
+    //-----------------------------------------------------------------------------------//
+    protected override void Dash()
+    {
+        if (RequiredEnergy(entityData.dashEnergy))
+        {
+            base.Dash();
+            UpdateEnergy(-entityData.dashEnergy);
+        }
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
     //Rotation Functions
     //-----------------------------------------------------------------------------------//
-    public override void RotateGun()
+    protected override void RotateGun()
     {
         Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
         gun.transform.rotation = Quaternion.LookRotation(ray.direction, transform.up);
     }
 
-    private void Look()
+    protected void Look()
     {
         float horizontalLook = mouseHorizontal * sensitivity * Time.deltaTime;
         float verticalLook = mouseVertical * sensitivity * Time.deltaTime;
@@ -74,13 +103,55 @@ public class PlayerController : Entity
     //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
+    //Shooting Functions
+    //-----------------------------------------------------------------------------------//
+    protected override void Shoot()
+    {
+        if (RequiredEnergy(entityData.shootEnergy))
+        {
+            base.Shoot();
+            UpdateEnergy(-entityData.shootEnergy);
+        }
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
     //Damage Functions
     //-----------------------------------------------------------------------------------//
     public override void DealDamage(int damage)
     {
         base.DealDamage(damage);
         UIhealthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
-        UIhealthText.text = String.Format("{0} / {1}", entityData.health, entitySO.health);
+        UIhealthText.text = String.Format("{0} / {1}", (int)entityData.health, (int)entitySO.health);
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
+    //Energy Functions
+    //-----------------------------------------------------------------------------------//
+    public void UpdateEnergy(float amount)
+    {
+        entityData.energy += amount;
+        if (entityData.energy > entitySO.energy)
+        {
+            entityData.energy = entitySO.energy;
+        }
+        else if (entityData.energy <= 0)
+        {
+            entityData.energy = 0;
+        }
+
+        UIenergyBar.fillAmount = (float)entityData.energy / (float)entitySO.energy;
+        UIenergyText.text = String.Format("{0} / {1}", (int)entityData.energy, (int)entitySO.energy);
+    }
+
+    public bool RequiredEnergy(float amount)
+    {
+        if (entityData.energy < amount)
+        {
+            return false;
+        }
+        return true;
     }
     //-----------------------------------------------------------------------------------//
 

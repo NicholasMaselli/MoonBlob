@@ -7,7 +7,6 @@ public class EntityData
 {
     [Header("Entity Stats")]
     public int health = 100;
-    public int energy = 10;
     public float speed = 5;
 
     [Header("Jump Stats")]
@@ -17,18 +16,25 @@ public class EntityData
     public float dashCooldown = 1;
     public float dashSpeed = 5;
 
-    [Header("Touch Damage")]
-    public int touchDamage = 5;
-
     [Header("Invinsible After Damage")]
     public bool invinsibleAfterDamage = false;
     public float invinsibliltyTime = 2.0f;
+
+    // Player Stats
+    [Header("Energy Stats")]
+    public float energy = 20;
+    public float energyGainRate = 1;
+    public float dashEnergy = 3;
+    public float shootEnergy = 1;
+
+    // Enemy Stats
+    [Header("Touch Damage")]
+    public int touchDamage = 5;
 
     public EntityData() { }
     public EntityData(EntitySO entitySO)
     {
         this.health = entitySO.health;
-        this.energy = entitySO.energy;
         this.speed = entitySO.speed;
 
         this.jumpForce = entitySO.jumpForce;
@@ -36,9 +42,16 @@ public class EntityData
         this.dashCooldown = entitySO.dashCooldown;
         this.dashSpeed = entitySO.dashSpeed;
 
-        this.touchDamage = entitySO.touchDamage;
-
         this.invinsibleAfterDamage = entitySO.invinsibleAfterDamage;
         this.invinsibliltyTime = entitySO.invinsibliltyTime;
+
+        // Player Stats
+        this.energy = entitySO.energy;
+        this.energyGainRate = entitySO.energyGainRate;
+        this.dashEnergy = entitySO.dashEnergy;
+        this.shootEnergy = entitySO.shootEnergy;
+
+        // Enemy Stats
+        this.touchDamage = entitySO.touchDamage;
     }
 }

@@ -76,7 +76,11 @@ public class Entity : MonoBehaviour
         {
             Jump();
         }
-        Dash();
+
+        if (readyToDash && (dashLeft || dashRight)) 
+        {
+            Dash();
+        }        
 
         if (gun != null)
         {
@@ -98,19 +102,19 @@ public class Entity : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     //Movement Functions
     //-----------------------------------------------------------------------------------//
-    protected void Move()
+    protected virtual void Move()
     {
         PlayerMovement();
     }
 
-    protected void PlayerMovement()
+    protected virtual void PlayerMovement()
     {
         Vector3 direction = (transform.forward * y) + (transform.right * x).normalized;
         Vector3 velocity = direction * entityData.speed * Time.fixedDeltaTime;
         entityRigidBody.MovePosition(transform.position + velocity);
     }
 
-    protected void Jump()
+    protected virtual void Jump()
     {
         if (!grounded) return;
         grounded = false;
@@ -120,7 +124,7 @@ public class Entity : MonoBehaviour
         jumping = false;
     }
 
-    protected void Dash()
+    protected virtual void Dash()
     {
         if (!readyToDash || (!dashLeft && !dashRight)) return;
         readyToDash = false;
@@ -139,22 +143,18 @@ public class Entity : MonoBehaviour
         entityRigidBody.MovePosition(transform.position + dashVector);
     }
 
-    protected void ResetDash()
+    public void ResetDash()
     {
         readyToDash = true;
     }
     //-----------------------------------------------------------------------------------//
 
-
     //-----------------------------------------------------------------------------------//
     //Shooting Functions
     //-----------------------------------------------------------------------------------//
-    public virtual void RotateGun()
-    {
-        
-    }
+    protected virtual void RotateGun() { }
 
-    public void Shoot()
+    protected virtual void Shoot()
     {
         GameObject bulletGO = Instantiate(bulletPrefab, shootOrigin.transform.position + (0.15f * shootOrigin.transform.forward), transform.rotation);
         Bullet bullet = bulletGO.GetComponent<Bullet>();
@@ -176,9 +176,6 @@ public class Entity : MonoBehaviour
             entityData.health = 0;
             Destroy(this.gameObject);
         }
-
-        healthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
-        healthText.text = String.Format("{0} / {1}", entityData.health, entitySO.health);
 
         if (entityData.invinsibleAfterDamage)
         {
