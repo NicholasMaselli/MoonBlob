@@ -57,7 +57,7 @@ public class Bullet : MonoBehaviour
             GravityAttractor gravityAttractor = collider.gameObject.GetComponent<GravityAttractor>();
             if (gravityAttractor != null)
             {
-                GravityAttractor playerGravityAttractor = entity.gameObject.GetComponent<GravityBody>().gravityAttractor;
+                GravityAttractor playerGravityAttractor = entity?.gameObject.GetComponent<GravityBody>().gravityAttractor;
                 if (gravityAttractor == playerGravityAttractor)
                 {
                     return;

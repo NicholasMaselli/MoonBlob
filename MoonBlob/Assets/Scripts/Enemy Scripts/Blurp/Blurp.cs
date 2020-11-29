@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Blurp : Enemy
 {
-    //-----------------------------------------------------------------------------------//
-    //Death Functions
-    //-----------------------------------------------------------------------------------//
     protected override void Die()
     {
         // Spawn 2 Peeps on death
@@ -21,5 +18,4 @@ public class Blurp : Enemy
         }
         Destroy(this.gameObject);
     }
-    //-----------------------------------------------------------------------------------//
 }

@@ -120,7 +120,7 @@ public class Entity : MonoBehaviour
         grounded = false;
 
         // Apply jump forces
-        entityRigidBody.AddForce(transform.up * entityData.jumpForce * 1.5f);
+        entityRigidBody.AddForce(transform.up * entityData.jumpForce);
         jumping = false;
     }
 
@@ -152,7 +152,11 @@ public class Entity : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     //Shooting Functions
     //-----------------------------------------------------------------------------------//
-    protected virtual void RotateGun() { }
+    protected virtual void RotateGun() 
+    {
+        gun?.transform.LookAt(GameManager.instance.localPlayer.transform);
+    }
+
 
     protected virtual void Shoot()
     {

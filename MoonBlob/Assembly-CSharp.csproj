@@ -78,6 +78,9 @@
     <Compile Include="Assets\Scripts\Data Scripts\DataDB.cs" />
     <Compile Include="Assets\Scripts\Enemy Scripts\Glob\Glob.cs" />
     <Compile Include="Assets\Scripts\Enemy Scripts\Yolg\Yolg.cs" />
+    <Compile Include="Assets\Scripts\Enemy Scripts\Ooggy\Ooggy.cs" />
+    <Compile Include="Assets\Scripts\Enemy Scripts\Rooboo\Rooboo.cs" />
+    <Compile Include="Assets\Scripts\Manager Scripts\HomeManager.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

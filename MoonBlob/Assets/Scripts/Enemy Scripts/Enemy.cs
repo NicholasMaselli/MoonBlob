@@ -60,9 +60,16 @@ public class Enemy : Entity
             }
             */
         }
-        else
+
+        shoot = false;
+        if (gun != null)
         {
-            x = 0;
+            shootElapsedTime += Time.deltaTime;
+            if (shootElapsedTime > entityData.shootTime)
+            {
+                shoot = true;
+                shootElapsedTime = 0.0f;
+            }
         }
     }
     //-----------------------------------------------------------------------------------//

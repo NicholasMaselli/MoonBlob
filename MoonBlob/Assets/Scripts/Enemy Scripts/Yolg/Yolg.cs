@@ -12,10 +12,8 @@ public class Yolg : Enemy
     protected override void PlayerMovement()
     {
         Vector3 direction = (GameManager.instance.localPlayer.transform.position - transform.position).normalized;
-        Vector3 velocity = direction * entityData.speed;// * Time.fixedDeltaTime;
+        Vector3 velocity = direction * entityData.speed;
 
-        //transform.Translate(velocity);
         entityRigidBody.velocity = velocity;
-        //entityRigidBody.MovePosition(transform.position + velocity);
     }
 }
