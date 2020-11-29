@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
+    [Header("Energy Variables")]
+    protected float shootElapsedTime = 0.0f;
+
     //-----------------------------------------------------------------------------------//
     //Enemy Initialization and Update
     //-----------------------------------------------------------------------------------//
@@ -20,10 +23,10 @@ public class Enemy : Entity
         base.Update();
     }
 
-    private void GetEnemyInput()
+    protected virtual void GetEnemyInput()
     {
         // Move only if playerController is on the same Planet as you
-        if (GameManager.instance.localPlayer.gravityBody.gravityAttractor == gravityBody.gravityAttractor)
+        if (GameManager.instance.localPlayer.gravityBody.gravityAttractor == gravityBody?.gravityAttractor)
         {
             transform.LookAt(GameManager.instance.localPlayer.transform, gravityBody.gravityAttractor.gravityDirection);
             y = 1;
@@ -87,9 +90,8 @@ public class Enemy : Entity
         {
             playerController.DealDamage(entityData.touchDamage);
 
-            Vector3 collideDirection = collision.impulse.normalized;
-
             // Apply a force to the player controller and flicker its material
+            Vector3 collideDirection = collision.impulse.normalized;
             playerController.entityRigidBody.AddForce(5 * collideDirection, ForceMode.Impulse);
         }
     }

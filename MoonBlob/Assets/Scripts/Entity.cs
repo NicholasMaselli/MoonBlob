@@ -23,10 +23,9 @@ public class Entity : MonoBehaviour
     protected bool dashRight;
     protected bool shoot;
 
-    [Header("Transforms")]
+    [Header("Physics Variables")]
     public Rigidbody entityRigidBody;
     public GravityBody gravityBody;
-    public List<MeshRenderer> meshRenderers;
 
     [Header("Rotation Variables")]
     protected float xRotation;
@@ -50,11 +49,12 @@ public class Entity : MonoBehaviour
     [HideInInspector] public bool temporarilyInvinsible;
 
     [Header("Graphics Variables")]
+    public List<MeshRenderer> meshRenderers;
     public Image healthBar;
     public TextMeshProUGUI healthText;
 
     //-----------------------------------------------------------------------------------//
-    //Entity Initialization and Update
+    //Initialization and Update
     //-----------------------------------------------------------------------------------//
     public virtual void Start()
     {
@@ -109,7 +109,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void PlayerMovement()
     {
-        Vector3 direction = (transform.forward * y) + (transform.right * x).normalized;
+        Vector3 direction = ((transform.forward * y) + (transform.right * x)).normalized;
         Vector3 velocity = direction * entityData.speed * Time.fixedDeltaTime;
         entityRigidBody.MovePosition(transform.position + velocity);
     }
@@ -158,8 +158,7 @@ public class Entity : MonoBehaviour
     {
         GameObject bulletGO = Instantiate(bulletPrefab, shootOrigin.transform.position + (0.15f * shootOrigin.transform.forward), transform.rotation);
         Bullet bullet = bulletGO.GetComponent<Bullet>();
-        bullet.bulletRigidBody.velocity = gun.transform.forward * bullet.speed;
-        bullet.entity = this;
+        bullet.Initialize(this, entityData.bulletDamage, entityData.bulletSpeed, entityData.bulletLifeTime, gun.transform);
     }
     //-----------------------------------------------------------------------------------//
 
@@ -174,7 +173,7 @@ public class Entity : MonoBehaviour
         if (entityData.health <= 0)
         {
             entityData.health = 0;
-            Destroy(this.gameObject);
+            Die();
         }
 
         if (entityData.invinsibleAfterDamage)
@@ -209,6 +208,15 @@ public class Entity : MonoBehaviour
     public void ResetInvinsibility()
     {
         temporarilyInvinsible = false;
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
+    //Death Functions
+    //-----------------------------------------------------------------------------------//
+    protected virtual void Die()
+    {
+        Destroy(this.gameObject);
     }
     //-----------------------------------------------------------------------------------//
 }

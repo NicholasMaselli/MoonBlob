@@ -65,7 +65,7 @@
     <Compile Include="Assets\Scripts\Entity.cs" />
     <Compile Include="Assets\Scripts\Data Scripts\EntitySO.cs" />
     <Compile Include="Assets\Scripts\Data Scripts\EntityData.cs" />
-    <Compile Include="Assets\Scripts\Enemy.cs" />
+    <Compile Include="Assets\Scripts\Enemy Scripts\Enemy.cs" />
     <Compile Include="Assets\ThirdPartyLibraries\Demigiant\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
     <Compile Include="Assets\ThirdPartyLibraries\Demigiant\DOTween\Modules\DOTweenModulePhysics2D.cs" />
     <Compile Include="Assets\ThirdPartyLibraries\Demigiant\DOTween\Modules\DOTweenModulePhysics.cs" />
@@ -73,6 +73,11 @@
     <Compile Include="Assets\ThirdPartyLibraries\Demigiant\DOTween\Modules\DOTweenModuleAudio.cs" />
     <Compile Include="Assets\ThirdPartyLibraries\Demigiant\DOTween\Modules\DOTweenModuleSprite.cs" />
     <Compile Include="Assets\ThirdPartyLibraries\Demigiant\DOTween\Modules\DOTweenModuleUI.cs" />
+    <Compile Include="Assets\Scripts\Enemy Scripts\Peep\Peep.cs" />
+    <Compile Include="Assets\Scripts\Enemy Scripts\Blurp\Blurp.cs" />
+    <Compile Include="Assets\Scripts\Data Scripts\DataDB.cs" />
+    <Compile Include="Assets\Scripts\Enemy Scripts\Glob\Glob.cs" />
+    <Compile Include="Assets\Scripts\Enemy Scripts\Yolg\Yolg.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

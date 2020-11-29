@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     public GravityAttractor initialMoon;
     public PlayerController localPlayer;
 
+    // Game Data
+    [Header("Game Data")]
+    public DataDB dataDB;
+
     private void Awake()
     {
         if (instance != null)
@@ -17,5 +21,10 @@ public class GameManager : MonoBehaviour
             return;
         }
         instance = this;
+    }
+
+    private void Start()
+    {
+        dataDB.Initialize();
     }
 }

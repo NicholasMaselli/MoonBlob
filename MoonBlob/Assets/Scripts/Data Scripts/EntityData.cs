@@ -5,6 +5,10 @@ using UnityEngine;
 [Serializable]
 public class EntityData
 {
+    [Header("Entity Identity")]
+    public string entityName;
+    public int teamId;
+
     [Header("Entity Stats")]
     public int health = 100;
     public float speed = 5;
@@ -15,6 +19,11 @@ public class EntityData
     [Header("Dash Stats")]
     public float dashCooldown = 1;
     public float dashSpeed = 5;
+
+    [Header("Shoot Stats")]
+    public int bulletDamage = 50;
+    public float bulletSpeed = 1.0f;
+    public float bulletLifeTime = 1.0f;
 
     [Header("Invinsible After Damage")]
     public bool invinsibleAfterDamage = false;
@@ -28,12 +37,17 @@ public class EntityData
     public float shootEnergy = 1;
 
     // Enemy Stats
-    [Header("Touch Damage")]
+    [Header("Enemy Damage")]
     public int touchDamage = 5;
+    public int shootDamage = 10;
+    public float shootTime = 3.0f;
 
     public EntityData() { }
     public EntityData(EntitySO entitySO)
     {
+        this.entityName = entitySO.entityName;
+        this.teamId = entitySO.teamId;
+
         this.health = entitySO.health;
         this.speed = entitySO.speed;
 
@@ -41,6 +55,10 @@ public class EntityData
 
         this.dashCooldown = entitySO.dashCooldown;
         this.dashSpeed = entitySO.dashSpeed;
+
+        this.bulletDamage = entitySO.bulletDamage;
+        this.bulletSpeed = entitySO.bulletSpeed;
+        this.bulletLifeTime = entitySO.bulletLifeTime;
 
         this.invinsibleAfterDamage = entitySO.invinsibleAfterDamage;
         this.invinsibliltyTime = entitySO.invinsibliltyTime;
@@ -53,5 +71,6 @@ public class EntityData
 
         // Enemy Stats
         this.touchDamage = entitySO.touchDamage;
+        this.shootTime = entitySO.shootTime;
     }
 }

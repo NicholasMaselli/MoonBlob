@@ -5,24 +5,33 @@ using UnityEngine.VFX;
 
 public class Bullet : MonoBehaviour
 {
-    //Need Some stat scriptable object here
+    [Header("Owner Data")]
+    [HideInInspector] public Entity entity;
 
-
+    [Header("Physics Variables")]
     public Rigidbody bulletRigidBody;
-
     public GravityBody gravityBody;
 
-    // The Player that shot the bullet (will be entity soon)
-    public Entity entity;
-
     [Header("Bullet Stats")]
-    public int speed;
-    public float lifeTime = 1f;
     public int damage = 50;
+    public float speed = 1.0f;
+    public float lifeTime = 1.0f;
 
     [Header("Graphics Variables")]
     public GameObject explosionParticles;
     public float explosionLifeTime = 1f;
+
+    //-----------------------------------------------------------------------------------//
+    //Initialization and Update
+    //-----------------------------------------------------------------------------------//
+    public void Initialize(Entity entity, int damage, float speed, float lifeTime, Transform gunTransform)
+    {
+        this.entity = entity;
+        this.damage = damage;
+        this.speed = speed;
+        this.lifeTime = lifeTime;
+        bulletRigidBody.velocity = gunTransform.forward * speed;
+    }
 
     private void Update()
     {
@@ -34,6 +43,7 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
     //Change Planet Functions
@@ -55,7 +65,7 @@ public class Bullet : MonoBehaviour
             }
 
             Entity collidedEntity = collider.gameObject.GetComponent<Entity>();
-            if (collidedEntity != null && collidedEntity == entity)
+            if (collidedEntity != null && collidedEntity.entityData.teamId == entity.entityData.teamId)
             {
                 return;
             }
