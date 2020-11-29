@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public GravityAttractor initialMoon;
+    public PlayerController localPlayer;
 
     private void Awake()
     {

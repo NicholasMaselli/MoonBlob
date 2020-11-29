@@ -13,11 +13,12 @@ public class Bullet : MonoBehaviour
     public GravityBody gravityBody;
 
     // The Player that shot the bullet (will be entity soon)
-    public PlayerController playerController;
+    public Entity entity;
 
     [Header("Bullet Stats")]
     public int speed;
     public float lifeTime = 1f;
+    public int damage = 50;
 
     [Header("Graphics Variables")]
     public GameObject explosionParticles;
@@ -46,17 +47,21 @@ public class Bullet : MonoBehaviour
             GravityAttractor gravityAttractor = collider.gameObject.GetComponent<GravityAttractor>();
             if (gravityAttractor != null)
             {
-                GravityAttractor playerGravityAttractor = playerController.gameObject.GetComponent<GravityBody>().gravityAttractor;
+                GravityAttractor playerGravityAttractor = entity.gameObject.GetComponent<GravityBody>().gravityAttractor;
                 if (gravityAttractor == playerGravityAttractor)
                 {
                     return;
                 }
             }
 
-            PlayerController collidedPlayerController = collider.gameObject.GetComponent<PlayerController>();
-            if (collidedPlayerController != null)
+            Entity collidedEntity = collider.gameObject.GetComponent<Entity>();
+            if (collidedEntity != null && collidedEntity == entity)
             {
                 return;
+            }
+            else if (collidedEntity != null)
+            {
+                collidedEntity.DealDamage(damage);
             }
 
             GameObject explosion = Instantiate(explosionParticles, transform.position + (0.5f * gravityBody.gravityAttractor.gravityDirection), transform.rotation);

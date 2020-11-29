@@ -1,78 +1,36 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour
+using TMPro;
+
+public class PlayerController : Entity
 {
-    [Header("Transforms")]
-    public Rigidbody playerRigidBody;
-    public Transform playerCamera;
+    [Header("Player Camera")]
+    public Camera playerCamera;
 
-    [Header("Input")]
-    private float x;
-    private float y;
-    private float mouseHorizontal;
-    private float mouseVertical;
-    private bool jumping;
-    private bool sprinting;
-    private bool dashLeft;
-    private bool dashRight;
-    private bool shoot;
-
-    [Header("Movement Variables")]
-    public float speed;
-
-    [Header("Rotation Variables")]
-    private float xRotation;
-    private float sensitivity = 200f;
-
-    [Header("Jump Variables")]
-    public float jumpForce = 500f;
-
-    [Header("Grounded Variables")]
-    public Transform groundCheck;
-    public float groundDistance = 0.4f;
-    public LayerMask groundMask;
-    private bool grounded = true;
-
-    [Header("Dash Variables")]
-    public float dashCooldown = 1;
-    public float dashSpeed = 5;
-    private bool readyToDash = true;
-
-    [Header("Shooting Variables")]
-    public GameObject bulletPrefab;
+    [Header("Graphics Functions")]
+    public Image UIhealthBar;
+    public TextMeshProUGUI UIhealthText;
+    public Image UIenergyBar;
+    public TextMeshProUGUI UIenergyText;
 
     //-----------------------------------------------------------------------------------//
     //PlayerController Initialization and Update
     //-----------------------------------------------------------------------------------//
-    private void Start()
+    public override void Start()
     {
+        base.Start();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    private void Update()
+    protected override void Update()
     {
-        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask, QueryTriggerInteraction.Ignore);
         GetPlayerInput();
         Look();
-
-        // Jumping and dashing in Update because they are single physics actions
-        if (jumping)
-        {
-            Jump();
-        }
-        Dash();
-
-        if (shoot)
-        {
-            Shoot();
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        Move();
-    }
+        base.Update();
+    }    
 
     private void GetPlayerInput()
     {
@@ -89,57 +47,14 @@ public class PlayerController : MonoBehaviour
     //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
-    //Movement Functions
-    //-----------------------------------------------------------------------------------//
-    private void Move()
-    {
-        PlayerMovement();
-    }
-    private void PlayerMovement()
-    {
-        Vector3 direction = (transform.forward * y) + (transform.right * x).normalized;
-        Vector3 velocity = direction * speed * Time.fixedDeltaTime;
-        playerRigidBody.MovePosition(transform.position + velocity);
-    }
-
-    private void Jump()
-    {
-        if (!grounded) return;        
-        grounded = false;
-
-        // Apply jump forces
-        playerRigidBody.AddForce(transform.up * jumpForce * 1.5f);
-        jumping = false;   
-    }
-
-    private void Dash()
-    {
-        if (!readyToDash || (!dashLeft && !dashRight)) return;
-        readyToDash = false;
-
-        Vector3 dashVector = Vector3.zero;
-        if (dashLeft)
-        {
-            dashVector = -transform.right * dashSpeed;
-        }
-        else if (dashRight)
-        {
-            dashVector = transform.right * dashSpeed;
-        }
-
-        Invoke(nameof(ResetDash), dashCooldown);
-        playerRigidBody.MovePosition(transform.position + dashVector);
-    }
-
-    private void ResetDash()
-    {
-        readyToDash = true;
-    }
-    //-----------------------------------------------------------------------------------//
-
-    //-----------------------------------------------------------------------------------//
     //Rotation Functions
     //-----------------------------------------------------------------------------------//
+    public override void RotateGun()
+    {
+        Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+        gun.transform.rotation = Quaternion.LookRotation(ray.direction, transform.up);
+    }
+
     private void Look()
     {
         float horizontalLook = mouseHorizontal * sensitivity * Time.deltaTime;
@@ -150,7 +65,7 @@ public class PlayerController : MonoBehaviour
         float yRotation = rotation.y + horizontalLook;
 
         xRotation -= verticalLook;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        xRotation = Mathf.Clamp(xRotation, -60f, 60f);
 
         //Perform the rotations
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
@@ -159,14 +74,13 @@ public class PlayerController : MonoBehaviour
     //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
-    //Shooting Functions
+    //Damage Functions
     //-----------------------------------------------------------------------------------//
-    public void Shoot()
+    public override void DealDamage(int damage)
     {
-        GameObject bulletGO = Instantiate(bulletPrefab, transform.position + (0.25f * transform.forward) + (0.15f * transform.up), transform.rotation);
-        Bullet bullet = bulletGO.GetComponent<Bullet>();
-        bullet.bulletRigidBody.velocity = transform.forward * bullet.speed;
-        bullet.playerController = this;
+        base.DealDamage(damage);
+        UIhealthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
+        UIhealthText.text = String.Format("{0} / {1}", entityData.health, entitySO.health);
     }
     //-----------------------------------------------------------------------------------//
 
