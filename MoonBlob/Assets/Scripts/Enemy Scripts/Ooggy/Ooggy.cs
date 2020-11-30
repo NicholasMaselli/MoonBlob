@@ -43,9 +43,13 @@ public class Ooggy : Enemy
             int globCount = 2;
             for (int i = 0; i < globCount; i++)
             {
-                Instantiate(globPrefrab, transform.position, transform.rotation);
+                GameObject globGO = Instantiate(globPrefrab, transform.position, transform.rotation, GameManager.instance.entityMap);
+                Enemy enemy = globGO.GetComponent<Enemy>();
+                enemy.Initialize();
+
+                GameManager.instance.currentWave.AddActiveEnemy(enemy);
             }
         }
-        Destroy(this.gameObject);
+        base.Die();
     }
 }

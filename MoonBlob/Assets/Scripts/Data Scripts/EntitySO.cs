@@ -12,7 +12,8 @@ public class EntitySO : ScriptableObject
     [Header("Entity Stats")]
     public int health = 100;
     public float speed = 5;
-    
+    public float sprintSpeed = 8;
+
     [Header("Jump Stats")]
     public float jumpForce = 200;
 

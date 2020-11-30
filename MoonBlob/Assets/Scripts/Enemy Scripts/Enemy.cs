@@ -10,11 +10,14 @@ public class Enemy : Entity
     //-----------------------------------------------------------------------------------//
     //Enemy Initialization and Update
     //-----------------------------------------------------------------------------------//
-    public override void Start()
+    public override void Initialize()
     {
-        base.Start(); 
+        base.Initialize(); 
         healthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
         healthText.text = String.Format("{0} / {1}", (int)entityData.health, (int)entitySO.health);
+
+        // Given enemies some initial movement
+        y = 1;
     }
 
     protected override void Update()
@@ -101,6 +104,16 @@ public class Enemy : Entity
             Vector3 collideDirection = collision.impulse.normalized;
             playerController.entityRigidBody.AddForce(5 * collideDirection, ForceMode.Impulse);
         }
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
+    //Death Functions
+    //-----------------------------------------------------------------------------------//
+    protected override void Die()
+    {
+        GameManager.instance.currentWave.RemoveActiveEnemy(entityData.entityId);
+        base.Die();
     }
     //-----------------------------------------------------------------------------------//
 

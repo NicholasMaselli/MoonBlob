@@ -9,7 +9,7 @@ public class GravityBody : MonoBehaviour
 
     private void Start()
     {
-        gravityAttractor = GameManager.instance.initialMoon;
+        gravityAttractor = GameManager.instance.moons[0];
     }
 
     private void FixedUpdate()

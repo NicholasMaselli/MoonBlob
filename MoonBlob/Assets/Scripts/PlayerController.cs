@@ -8,10 +8,15 @@ public class PlayerController : Entity
 {
     [Header("Player Camera")]
     public Camera playerCamera;
+    public bool rotationSensitivity;
 
     [Header("Energy Variables")]
     protected float energyGainTime = 1.0f;
     protected float energyGainElapsedTime = 0.0f;
+    
+    protected float sprintBaseEnergyTimer = 1.0f;
+    protected float sprintEneryCountdown = 0.0f;
+    protected float sprintEnergyDecrease = 3.0f;
 
     [Header("Graphics Variables")]
     public Image UIhealthBar;
@@ -20,11 +25,11 @@ public class PlayerController : Entity
     public TextMeshProUGUI UIenergyText;
 
     //-----------------------------------------------------------------------------------//
-    //PlayerController Initialization and Update
+    //Initialization and Update
     //-----------------------------------------------------------------------------------//
-    public override void Start()
+    private void Start()
     {
-        base.Start();
+        Initialize();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -39,6 +44,17 @@ public class PlayerController : Entity
         GetPlayerInput();
         Look();
         base.Update();
+
+        if (sprinting)
+        {
+            sprintEneryCountdown += Time.deltaTime;
+            if (sprintEneryCountdown > sprintBaseEnergyTimer)
+            {
+                UpdateEnergy(-sprintEnergyDecrease);
+                sprintEneryCountdown = 0.0f;
+            }
+        }
+        
 
         energyGainElapsedTime += Time.deltaTime;
         if (energyGainElapsedTime > energyGainTime)
@@ -59,6 +75,19 @@ public class PlayerController : Entity
         dashRight = Input.GetButtonDown("Dash Right");
 
         shoot = Input.GetMouseButtonDown(0);
+        rotationSensitivity = Input.GetMouseButton(1);
+
+        if (Input.GetButtonDown("Sprint") && entityData.energy > 0)
+        {
+            sprinting = true;
+        }
+
+        if (Input.GetButtonUp("Sprint"))
+        {
+            sprinting = false;
+            sprintEneryCountdown = 0.0f;
+
+        }
     }
     //-----------------------------------------------------------------------------------//
 
@@ -86,8 +115,15 @@ public class PlayerController : Entity
 
     protected void Look()
     {
-        float horizontalLook = mouseHorizontal * sensitivity * Time.deltaTime;
-        float verticalLook = mouseVertical * sensitivity * Time.deltaTime;
+        // Rotate to look faster if holding down right mouse button;
+        float additionalRotation = 1.0f;
+        if (rotationSensitivity)
+        {
+            additionalRotation = 3.0f;
+        }
+
+        float horizontalLook = mouseHorizontal * sensitivity * Time.deltaTime * additionalRotation;
+        float verticalLook = mouseVertical * sensitivity * Time.deltaTime * additionalRotation;
 
         // Calculate Rotations
         Vector3 rotation = playerCamera.transform.localRotation.eulerAngles;
@@ -139,6 +175,7 @@ public class PlayerController : Entity
         else if (entityData.energy <= 0)
         {
             entityData.energy = 0;
+            sprinting = false;
         }
 
         UIenergyBar.fillAmount = (float)entityData.energy / (float)entitySO.energy;

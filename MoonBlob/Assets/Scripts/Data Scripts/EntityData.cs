@@ -6,12 +6,14 @@ using UnityEngine;
 public class EntityData
 {
     [Header("Entity Identity")]
+    public int entityId;
     public string entityName;
     public int teamId;
 
     [Header("Entity Stats")]
     public int health = 100;
     public float speed = 5;
+    public float sprintSpeed = 8;
 
     [Header("Jump Stats")]
     public float jumpForce = 500;
@@ -43,13 +45,15 @@ public class EntityData
     public float shootTime = 3.0f;
 
     public EntityData() { }
-    public EntityData(EntitySO entitySO)
+    public EntityData(int entityId, EntitySO entitySO)
     {
+        this.entityId = entityId;
         this.entityName = entitySO.entityName;
         this.teamId = entitySO.teamId;
 
         this.health = entitySO.health;
         this.speed = entitySO.speed;
+        this.sprintSpeed = entitySO.sprintSpeed;
 
         this.jumpForce = entitySO.jumpForce;
 

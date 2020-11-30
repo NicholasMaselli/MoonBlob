@@ -56,17 +56,18 @@ public class Entity : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     //Initialization and Update
     //-----------------------------------------------------------------------------------//
-    public virtual void Start()
+    public virtual void Initialize()
     {
-        entityData = new EntityData(entitySO);
+        entityData = new EntityData(GameManager.instance.GetNextEntityId(), entitySO);
 
         // Create a new material for each mesh so that changes do not affect all entities with the material 
-        foreach(MeshRenderer meshRenderer in meshRenderers)
+        foreach (MeshRenderer meshRenderer in meshRenderers)
         {
             Material material = new Material(meshRenderer.sharedMaterial);
             meshRenderer.sharedMaterial = material;
         }
     }
+
     protected virtual void Update()
     {
         grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask, QueryTriggerInteraction.Ignore);
@@ -109,8 +110,14 @@ public class Entity : MonoBehaviour
 
     protected virtual void PlayerMovement()
     {
+        float speed = entityData.speed;
+        if (sprinting)
+        {
+            speed = entityData.sprintSpeed;
+        }
+
         Vector3 direction = ((transform.forward * y) + (transform.right * x)).normalized;
-        Vector3 velocity = direction * entityData.speed * Time.fixedDeltaTime;
+        Vector3 velocity = direction * speed * Time.fixedDeltaTime;
         entityRigidBody.MovePosition(transform.position + velocity);
     }
 

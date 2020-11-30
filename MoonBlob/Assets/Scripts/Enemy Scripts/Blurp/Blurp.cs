@@ -13,9 +13,13 @@ public class Blurp : Enemy
             int peepCount = 2;
             for (int i = 0; i < peepCount; i++)
             {
-                Instantiate(peepPrefrab, transform.position, transform.rotation);
+                GameObject peepGO = Instantiate(peepPrefrab, transform.position, transform.rotation, GameManager.instance.entityMap);
+                Enemy enemy = peepGO.GetComponent<Enemy>();
+                enemy.Initialize();
+
+                GameManager.instance.currentWave.AddActiveEnemy(enemy);
             }
         }
-        Destroy(this.gameObject);
+        base.Die();
     }
 }

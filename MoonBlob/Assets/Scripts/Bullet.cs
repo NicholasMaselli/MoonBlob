@@ -54,17 +54,17 @@ public class Bullet : MonoBehaviour
         if (!collider.isTrigger)
         {
             // Ignore the player and player's current attractor body
-            GravityAttractor gravityAttractor = collider.gameObject.GetComponent<GravityAttractor>();
+            GravityAttractor gravityAttractor = collider?.gameObject?.GetComponent<GravityAttractor>();
             if (gravityAttractor != null)
             {
-                GravityAttractor playerGravityAttractor = entity?.gameObject.GetComponent<GravityBody>().gravityAttractor;
+                GravityAttractor playerGravityAttractor = entity?.gameObject?.GetComponent<GravityBody>().gravityAttractor;
                 if (gravityAttractor == playerGravityAttractor)
                 {
                     return;
                 }
             }
 
-            Entity collidedEntity = collider.gameObject.GetComponent<Entity>();
+            Entity collidedEntity = collider?.gameObject?.GetComponent<Entity>();
             if (collidedEntity != null && collidedEntity.entityData.teamId == entity.entityData.teamId)
             {
                 return;
