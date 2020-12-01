@@ -53,6 +53,11 @@ public class Entity : MonoBehaviour
     public Image healthBar;
     public TextMeshProUGUI healthText;
 
+    [Header("Audio Variables")]
+    public float soundCountdown = 0.4f;
+    public float walkSoundTime = 0.4f;
+    public float sprintSoundTime = 0.2f;
+
     //-----------------------------------------------------------------------------------//
     //Initialization and Update
     //-----------------------------------------------------------------------------------//
@@ -95,6 +100,28 @@ public class Entity : MonoBehaviour
         {
             Shoot();
         }
+
+        // Sound effects if continuously moving and on the same planet as the player
+        if (grounded &&  GameManager.instance.SameMoonAsPlayer(this) && (x != 0 || y != 0))
+        {
+            soundCountdown -= Time.deltaTime;
+            if (soundCountdown <= 0.0f)
+            {
+                GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobWalking, 0.35f);
+                if (sprinting)
+                {
+                    soundCountdown = sprintSoundTime;
+                }
+                else
+                {
+                    soundCountdown = walkSoundTime;
+                }
+            }
+        }
+        else
+        {
+            soundCountdown = walkSoundTime;
+        }
     }
 
     protected void FixedUpdate()
@@ -121,13 +148,15 @@ public class Entity : MonoBehaviour
 
         Vector3 direction = ((transform.forward * y) + (transform.right * x)).normalized;
         Vector3 velocity = direction * speed * Time.fixedDeltaTime;
-        entityRigidBody.MovePosition(transform.position + velocity);
+        entityRigidBody.MovePosition(transform.position + velocity);        
     }
 
     protected virtual void Jump()
     {
         if (!grounded) return;
         grounded = false;
+
+        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobJumping, 0.7f);
 
         // Apply jump forces
         entityRigidBody.AddForce(transform.up * entityData.jumpForce);
@@ -138,6 +167,8 @@ public class Entity : MonoBehaviour
     {
         if (!readyToDash || (!dashLeft && !dashRight)) return;
         readyToDash = false;
+
+        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobJumping, 0.7f);
 
         Vector3 dashVector = Vector3.zero;
         if (dashLeft)
@@ -170,6 +201,8 @@ public class Entity : MonoBehaviour
 
     protected virtual void Shoot()
     {
+        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobShoot, 0.3f);
+
         GameObject bulletGO = Instantiate(bulletPrefab, shootOrigin.transform.position + (0.15f * shootOrigin.transform.forward), transform.rotation);
         Bullet bullet = bulletGO.GetComponent<Bullet>();
         bullet.Initialize(this, entityData.bulletDamage, entityData.bulletSpeed, entityData.bulletLifeTime, gun.transform);
@@ -188,6 +221,10 @@ public class Entity : MonoBehaviour
         {
             entityData.health = 0;
             Die();
+        }
+        else
+        {
+            GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobHit, 0.3f);
         }
 
         if (entityData.invinsibleAfterDamage)
@@ -230,6 +267,7 @@ public class Entity : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     protected virtual void Die()
     {
+        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobDie, 0.6f);
         Destroy(this.gameObject);
     }
     //-----------------------------------------------------------------------------------//

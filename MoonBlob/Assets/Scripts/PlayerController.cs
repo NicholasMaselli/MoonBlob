@@ -23,6 +23,7 @@ public class PlayerController : Entity
     public TextMeshProUGUI UIhealthText;
     public Image UIenergyBar;
     public TextMeshProUGUI UIenergyText;
+    
 
     //-----------------------------------------------------------------------------------//
     //Initialization and Update
@@ -55,8 +56,7 @@ public class PlayerController : Entity
                 UpdateEnergy(-sprintEnergyDecrease);
                 sprintEneryCountdown = 0.0f;
             }
-        }
-        
+        }        
 
         energyGainElapsedTime += Time.deltaTime;
         if (energyGainElapsedTime > energyGainTime)
@@ -88,7 +88,6 @@ public class PlayerController : Entity
         {
             sprinting = false;
             sprintEneryCountdown = 0.0f;
-
         }
     }
     //-----------------------------------------------------------------------------------//

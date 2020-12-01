@@ -17,6 +17,15 @@ public class DataDB : ScriptableObject
     public List<DifficultyColors> difficultyColorsList = new List<DifficultyColors>();
     public Dictionary<Difficulty, Color> difficultyColors = new Dictionary<Difficulty, Color>();
 
+    [Header("Audio Clips")]
+    public AudioClip blobWalking;
+    public AudioClip blobJumping;
+    public AudioClip blobHit;
+    public AudioClip blobDie;
+    public AudioClip blobShoot;
+    public AudioClip waveCountdown;
+    public AudioClip startWave;
+
     public void Initialize()
     {
         enemySOs = new Dictionary<string, EntitySO>();

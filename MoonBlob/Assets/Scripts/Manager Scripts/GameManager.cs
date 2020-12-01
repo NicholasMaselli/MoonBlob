@@ -60,6 +60,9 @@ public class GameManager : MonoBehaviour
     public RectTransform mainMenuButton;
     public int continueCount = 0;
 
+    [Header("Audio Variables")]
+    public AudioSource audioSource;
+
     //-----------------------------------------------------------------------------------//
     //Initialization and Update Functions
     //-----------------------------------------------------------------------------------//
@@ -210,6 +213,17 @@ public class GameManager : MonoBehaviour
         int spawn = random.Next(spawnsPerMoon * moonCount);
         return spawnPoints[spawn].transform.position;
     }
+
+    public bool SameMoonAsPlayer(Entity entity)
+    {
+        if (entity.gravityBody == null) return false;
+        
+        if (entity.gravityBody.gravityAttractor == localPlayer.gravityBody.gravityAttractor)
+        {
+            return true;
+        }
+        return false;
+    }
     //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
@@ -224,6 +238,15 @@ public class GameManager : MonoBehaviour
     {
         if (waveCountdownTime <= UIcountdownValue)
         {
+            float volume = 0.6f;
+            AudioClip clip = GameManager.instance.dataDB.waveCountdown;
+            if (UIcountdownValue <= 0)
+            {
+                volume = 1.0f;
+                clip = GameManager.instance.dataDB.startWave;
+            }
+
+            GameManager.instance.audioSource.PlayOneShot(clip, volume);
             countdownText.text = UIcountdownValue.ToString();
             UIcountdownValue -= 1;
 
