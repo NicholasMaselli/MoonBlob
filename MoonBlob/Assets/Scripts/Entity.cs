@@ -59,6 +59,7 @@ public class Entity : MonoBehaviour
     public virtual void Initialize()
     {
         entityData = new EntityData(GameManager.instance.GetNextEntityId(), entitySO);
+        gravityBody?.Initialize();
 
         // Create a new material for each mesh so that changes do not affect all entities with the material 
         foreach (MeshRenderer meshRenderer in meshRenderers)
@@ -70,6 +71,8 @@ public class Entity : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (GameManager.instance.gameEnded) return;
+
         grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask, QueryTriggerInteraction.Ignore);
 
         // Jumping and dashing in Update because they are single physics actions

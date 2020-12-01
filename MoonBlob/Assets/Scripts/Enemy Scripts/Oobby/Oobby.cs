@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ooggy : Enemy
+public class Oobby : Enemy
 {
     [Header("Ooggy Shooting Variables")]
     public GameObject secondGun;
@@ -10,11 +10,11 @@ public class Ooggy : Enemy
 
     protected override void GetEnemyInput()
     {
-        transform.LookAt(GameManager.instance.localPlayer.transform, GameManager.instance.localPlayer.transform.up);
-        if (GameManager.instance.localPlayer.gravityBody.gravityAttractor == gravityBody?.gravityAttractor)
+        if (GameManager.instance.localPlayer.gravityBody.gravityAttractor != gravityBody?.gravityAttractor)
         {
-            y = 1;
-        }
+            transform.LookAt(GameManager.instance.localPlayer.transform, GameManager.instance.localPlayer.transform.up);
+        }        
+        base.GetEnemyInput();
     }
 
     protected override void RotateGun()

@@ -27,7 +27,7 @@ public class PlayerController : Entity
     //-----------------------------------------------------------------------------------//
     //Initialization and Update
     //-----------------------------------------------------------------------------------//
-    private void Start()
+    public void Start()
     {
         Initialize();
         Cursor.lockState = CursorLockMode.Locked;
@@ -41,6 +41,8 @@ public class PlayerController : Entity
 
     protected override void Update()
     {
+        if (GameManager.instance.gameEnded) return;
+
         GetPlayerInput();
         Look();
         base.Update();
@@ -192,4 +194,15 @@ public class PlayerController : Entity
     }
     //-----------------------------------------------------------------------------------//
 
+    //-----------------------------------------------------------------------------------//
+    //Death Functions
+    //-----------------------------------------------------------------------------------//
+    protected override void Die()
+    {
+        if (!GameManager.instance.gameEnded)
+        {
+            GameManager.instance.EndGame(false);
+        }        
+    }
+    //-----------------------------------------------------------------------------------//
 }

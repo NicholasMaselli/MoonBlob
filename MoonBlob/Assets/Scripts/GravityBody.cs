@@ -7,7 +7,10 @@ public class GravityBody : MonoBehaviour
     public Rigidbody gravityRigidBody;
     [HideInInspector] public GravityAttractor gravityAttractor;
 
-    private void Start()
+    //-----------------------------------------------------------------------------------//
+    //Initialization and Update Functions
+    //-----------------------------------------------------------------------------------//
+    public void Initialize()
     {
         gravityAttractor = GameManager.instance.moons[0];
     }
@@ -19,6 +22,7 @@ public class GravityBody : MonoBehaviour
             gravityAttractor.Attract(gravityRigidBody);
         }
     }
+    //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
     //Change Planet Functions
@@ -32,6 +36,12 @@ public class GravityBody : MonoBehaviour
             {
                 gravityAttractor = newGravityAttractor;
                 gravityAttractor.Attract(gravityRigidBody);
+
+                Enemy enemy = gameObject.GetComponent<Enemy>();
+                if (enemy != null)
+                {
+                    GameManager.instance.ChangeMoonWaveUI(enemy, gravityAttractor.moonId);
+                }                
             }
         }
     }

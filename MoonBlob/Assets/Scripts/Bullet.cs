@@ -46,7 +46,7 @@ public class Bullet : MonoBehaviour
     //-----------------------------------------------------------------------------------//
 
     //-----------------------------------------------------------------------------------//
-    //Change Planet Functions
+    //Bullet Trigger Functions
     //-----------------------------------------------------------------------------------//
     private void OnTriggerEnter(Collider collider)
     {
@@ -57,7 +57,7 @@ public class Bullet : MonoBehaviour
             GravityAttractor gravityAttractor = collider?.gameObject?.GetComponent<GravityAttractor>();
             if (gravityAttractor != null)
             {
-                GravityAttractor playerGravityAttractor = entity?.gameObject?.GetComponent<GravityBody>().gravityAttractor;
+                GravityAttractor playerGravityAttractor = entity?.gravityBody?.gravityAttractor;
                 if (gravityAttractor == playerGravityAttractor)
                 {
                     return;
@@ -74,8 +74,12 @@ public class Bullet : MonoBehaviour
                 collidedEntity.DealDamage(damage);
             }
 
-            GameObject explosion = Instantiate(explosionParticles, transform.position + (0.5f * gravityBody.gravityAttractor.gravityDirection), transform.rotation);
-            Destroy(explosion, explosionLifeTime);
+            if (transform != null && gravityBody?.gravityAttractor != null)
+            {
+                GameObject explosion = Instantiate(explosionParticles, transform.position + (0.5f * gravityBody.gravityAttractor.gravityDirection), transform.rotation);
+                Destroy(explosion, explosionLifeTime);
+            }           
+            
             Destroy(gameObject);      
         }
     }

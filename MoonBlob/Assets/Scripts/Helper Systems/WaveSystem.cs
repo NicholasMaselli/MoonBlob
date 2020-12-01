@@ -10,7 +10,7 @@ public static class WaveSystem
         { 2, "Blurp" },
         { 3, "Glob" },
         { 4, "Yolg" },
-        { 5, "Ooggy" },
+        { 5, "Oobby" },
         { 6, "Rooboo" },
         { 7, "Broogr" },
         { 8, "Bluubr" },

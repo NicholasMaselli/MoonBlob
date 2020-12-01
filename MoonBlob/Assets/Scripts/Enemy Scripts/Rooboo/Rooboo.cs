@@ -6,14 +6,25 @@ public class Rooboo : Enemy
 {
     protected override void GetEnemyInput()
     {
-        base.GetEnemyInput();
-        if (GameManager.instance.localPlayer.gravityBody.gravityAttractor != gravityBody?.gravityAttractor)
+        transform.LookAt(GameManager.instance.localPlayer.transform, GameManager.instance.localPlayer.transform.up);
+        
+        shoot = false;
+        if (gun != null)
         {
-            jumping = true;
+            shootElapsedTime += Time.deltaTime;
+            if (shootElapsedTime > entityData.shootTime)
+            {
+                shoot = true;
+                shootElapsedTime = 0.0f;
+            }
         }
-        else
-        {
-            jumping = false;
-        }
+    }
+
+    protected override void PlayerMovement()
+    {
+        Vector3 direction = (GameManager.instance.localPlayer.transform.position - transform.position).normalized;
+        Vector3 velocity = direction * entityData.speed;
+
+        entityRigidBody.velocity = velocity;
     }
 }

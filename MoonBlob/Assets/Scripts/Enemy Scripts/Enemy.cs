@@ -16,6 +16,13 @@ public class Enemy : Entity
         healthBar.fillAmount = (float)entityData.health / (float)entitySO.health;
         healthText.text = String.Format("{0} / {1}", (int)entityData.health, (int)entitySO.health);
 
+        int moonId = -1;
+        if (gravityBody?.gravityAttractor)
+        {
+            moonId = gravityBody.gravityAttractor.moonId;
+        }
+        GameManager.instance.AddWaveUI(this, moonId);
+
         // Given enemies some initial movement
         y = 1;
     }
@@ -33,35 +40,6 @@ public class Enemy : Entity
         {
             transform.LookAt(GameManager.instance.localPlayer.transform, gravityBody.gravityAttractor.gravityDirection);
             y = 1;
-
-
-            /*
-            if (GameManager.instance.localPlayer.transform.position.x > transform.position.x)
-            {
-                x = 1;
-            }
-            else if (GameManager.instance.localPlayer.transform.position.x > transform.position.x)
-            {
-                x = -1;
-            }
-            else
-            {
-                x = 0;
-            }
-
-            if (GameManager.instance.localPlayer.transform.position.y > transform.position.y)
-            {
-                y = 1;
-            }
-            else if (GameManager.instance.localPlayer.transform.position.y > transform.position.y)
-            {
-                y = -1;
-            }
-            else
-            {
-                y = 0;
-            }
-            */
         }
 
         shoot = false;
@@ -112,6 +90,7 @@ public class Enemy : Entity
     //-----------------------------------------------------------------------------------//
     protected override void Die()
     {
+        GameManager.instance.RemoveWaveUI(this);
         GameManager.instance.currentWave.RemoveActiveEnemy(entityData.entityId);
         base.Die();
     }

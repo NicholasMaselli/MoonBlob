@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GravityAttractor : MonoBehaviour
 {
+    public int moonId;
     public float gravitationalConstant = -5.0f;  //-9.81f;
     public Collider trigger;
 

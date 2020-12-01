@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HomeManager : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class HomeManager : MonoBehaviour
 
     public void Play(int difficulty)
     {
-        Debug.Log(difficulty);
+        StateManager.instance.difficulty = (Difficulty)difficulty;
+        SceneManager.LoadScene("MoonBlob");
     }
 }
