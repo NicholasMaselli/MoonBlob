@@ -63,6 +63,16 @@ public class GameManager : MonoBehaviour
     public AudioSource musicSource;
     public AudioSource sfxSource;
 
+    [Header("Mystery Blob")]
+    public Image oobbyImage;
+    public TextMeshProUGUI oobbyText;
+    public Image roobooImage;
+    public TextMeshProUGUI roobooText;
+    public Image broogrImage;
+    public TextMeshProUGUI broogrText;
+    public Image bluubImage;
+    public TextMeshProUGUI bluubText;
+
     //-----------------------------------------------------------------------------------//
     //Initialization and Update Functions
     //-----------------------------------------------------------------------------------//
@@ -90,13 +100,15 @@ public class GameManager : MonoBehaviour
         {
             moonColors.Add(index, moonColor);
             index += 1;
-        }        
+        }
     }
 
     private void Start()
     {
         DOTween.Init(logBehaviour: LogBehaviour.ErrorsOnly);
         DOTween.SetTweensCapacity(500, 50);
+
+        RevealBlobs(StateManager.instance.playerData);
         waveBG.color = StateManager.instance.dataDB.difficultyColors[StateManager.instance.difficulty];
         waveText.color = StateManager.instance.dataDB.difficultyColors[StateManager.instance.difficulty];
     }
@@ -426,5 +438,32 @@ public class GameManager : MonoBehaviour
         return list;
     }
     //-----------------------------------------------------------------------------------//
+
+    public void RevealBlobs(PlayerData playerData)
+    {
+        if (playerData.impossible > 0)
+        {
+            bluubImage.gameObject.SetActive(false);
+            bluubText.gameObject.SetActive(true);
+        }
+
+        if (playerData.hard > 0)
+        {
+            broogrImage.gameObject.SetActive(false);
+            broogrText.gameObject.SetActive(true);
+        }
+
+        if (playerData.normal > 0)
+        {
+            roobooImage.gameObject.SetActive(false);
+            roobooText.gameObject.SetActive(true);
+        }
+
+        if (playerData.easy > 0)
+        {
+            oobbyImage.gameObject.SetActive(false);
+            oobbyText.gameObject.SetActive(true);
+        }
+    }
 
 }

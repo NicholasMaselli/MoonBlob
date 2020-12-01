@@ -4,9 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+using TMPro;
+using DG.Tweening;
+
 public class HomeManager : MonoBehaviour
 {
     public static HomeManager instance;
+
+    [Header("Title Text")]
+    public TextMeshProUGUI titleText;
+    public Color startColor;
+    public Color endColor;
+    private bool isStartColor;
 
     [Header("Trophy Variables")]
     public BetterButton easyButton;
@@ -22,6 +31,16 @@ public class HomeManager : MonoBehaviour
 
     [Header("Options Menu")]
     public GameObject optionsMenu;
+
+    [Header("Mystery Blob")]
+    public Image oobbyImage;
+    public TextMeshProUGUI oobbyText;
+    public Image roobooImage;
+    public TextMeshProUGUI roobooText;
+    public Image broogrImage;
+    public TextMeshProUGUI broogrText;
+    public Image bluubImage;
+    public TextMeshProUGUI bluubText;
 
     private void Awake()
     {
@@ -64,12 +83,14 @@ public class HomeManager : MonoBehaviour
                 impossibleTrophy.gameObject.SetActive(true);
                 impossibleTrophy.sprite = StateManager.instance.dataDB.trophySprites[playerData.impossible - 1];
             }
+            RevealBlobs(playerData);
             StateManager.instance.playerData = playerData;
         }
         else
         {
             StateManager.instance.playerData = new PlayerData(0, 0, 0, 0);
         }
+        InvokeRepeating("TextSequence", 0.0f, 3.0f);
     }
 
     private void Update()
@@ -94,5 +115,47 @@ public class HomeManager : MonoBehaviour
     public void Exit()
     {
         Application.Quit();
+    }
+
+    public void TextSequence()
+    {
+        Sequence sequence = DOTween.Sequence();
+        if (isStartColor)
+        {
+            sequence.Insert(0.0f, titleText.DOColor(endColor, 3.0f)).SetEase(Ease.Linear);
+        }
+        else
+        {
+            sequence.Insert(0.0f, titleText.DOColor(startColor, 3.0f)).SetEase(Ease.Linear);
+        }
+        sequence.Play();
+        isStartColor = !isStartColor;
+    }
+
+    public void RevealBlobs(PlayerData playerData)
+    {
+        if (playerData.impossible > 0)
+        {
+            bluubImage.gameObject.SetActive(false);
+            bluubText.gameObject.SetActive(true);
+        }
+
+        if (playerData.hard > 0)
+        {
+            broogrImage.gameObject.SetActive(false);
+            broogrText.gameObject.SetActive(true);
+        }
+
+        if (playerData.normal > 0)
+        {
+            roobooImage.gameObject.SetActive(false);
+            roobooText.gameObject.SetActive(true);
+        }
+
+        if (playerData.easy > 0)
+        {
+            oobbyImage.gameObject.SetActive(false);
+            oobbyText.gameObject.SetActive(true);
+        }
     }
 }
