@@ -6,7 +6,10 @@ public class StateManager : MonoBehaviour
 {
     public static StateManager instance;
 
+    [Header("Game Data")]
     public Difficulty difficulty = Difficulty.Easy;
+    public DataDB dataDB;
+    public PlayerData playerData;
 
     //-----------------------------------------------------------------------------------//
     //Initialization and Update Functions
@@ -22,6 +25,8 @@ public class StateManager : MonoBehaviour
         //Keep this StateManager if it is the only one in the scene
         DontDestroyOnLoad(this.gameObject);
         instance = this;
+
+        dataDB.Initialize();
     }
     //-----------------------------------------------------------------------------------//
 }

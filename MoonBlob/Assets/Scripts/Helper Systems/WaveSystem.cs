@@ -13,7 +13,7 @@ public static class WaveSystem
         { 5, "Oobby" },
         { 6, "Rooboo" },
         { 7, "Broogr" },
-        { 8, "Bluubr" },
+        { 8, "Bluub" },
     };
 
     public static Wave CalculateWave(int waveNumber)
@@ -42,7 +42,7 @@ public static class WaveSystem
 
         foreach (KeyValuePair<string, int> enemyPair in wave.waveEnemies)
         {
-            GameObject enemyPrefab = GameManager.instance.dataDB.enemyPrefabs[enemyPair.Key];
+            GameObject enemyPrefab = StateManager.instance.dataDB.enemyPrefabs[enemyPair.Key];
             for (int i = 0; i < enemyPair.Value; i++)
             {
                 Vector3 spawnPosition = GameManager.instance.GetRandomSpawn(moonCount);

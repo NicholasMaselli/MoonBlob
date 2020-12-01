@@ -29,6 +29,9 @@ public class Enemy : Entity
 
     protected override void Update()
     {
+        if (GameManager.instance.gameEnded) return;
+        if (GameManager.instance.paused) return;
+
         GetEnemyInput();
         base.Update();
     }

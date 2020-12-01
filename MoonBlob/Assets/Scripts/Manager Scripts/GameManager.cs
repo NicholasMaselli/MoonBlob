@@ -14,9 +14,6 @@ public class GameManager : MonoBehaviour
     [Header("Player Data")]
     public PlayerController localPlayer;
 
-    [Header("Game Data")]
-    public DataDB dataDB;
-
     [Header("Moons")]
     [SerializeField] private List<GravityAttractor> moonList = new List<GravityAttractor>();
     [SerializeField] private List<Color> moonColorList = new List<Color>();
@@ -31,12 +28,12 @@ public class GameManager : MonoBehaviour
     public System.Random random;
 
     [Header("Active Game Data")]
-    public Difficulty difficulty;
     public Wave currentWave;
     public float waveDelayTime = 3.0f;
     public float waveCountdownTime = 0.0f;
 
     private int currentEntityId = 1000;
+    public bool paused = false;
     public bool gameEnded = false;
 
     [Header("Active Game UI Data")]
@@ -60,8 +57,11 @@ public class GameManager : MonoBehaviour
     public RectTransform mainMenuButton;
     public int continueCount = 0;
 
+    public GameObject optionsMenu;
+
     [Header("Audio Variables")]
-    public AudioSource audioSource;
+    public AudioSource musicSource;
+    public AudioSource sfxSource;
 
     //-----------------------------------------------------------------------------------//
     //Initialization and Update Functions
@@ -90,24 +90,26 @@ public class GameManager : MonoBehaviour
         {
             moonColors.Add(index, moonColor);
             index += 1;
-        }
-        dataDB.Initialize();
+        }        
+    }
 
-        if (StateManager.instance != null)
-        {
-            difficulty = StateManager.instance.difficulty;
-        }
-        else
-        {
-            difficulty = Difficulty.Easy;
-        }
-
-        waveBG.color = dataDB.difficultyColors[difficulty];
-        waveText.color = dataDB.difficultyColors[difficulty];
+    private void Start()
+    {
+        DOTween.Init(logBehaviour: LogBehaviour.ErrorsOnly);
+        DOTween.SetTweensCapacity(500, 50);
+        waveBG.color = StateManager.instance.dataDB.difficultyColors[StateManager.instance.difficulty];
+        waveText.color = StateManager.instance.dataDB.difficultyColors[StateManager.instance.difficulty];
     }
 
     private void Update()
     {
+        if (!gameEnded && Input.GetKeyDown("escape"))
+        {
+            ToggleOptions();
+        }
+
+        if (paused) return;
+
         if (!gameEnded && (currentWave == null || !currentWave.EnemiesRemaining()))
         {
             if (CheckEndGame(currentWave.waveNumber)) return;
@@ -239,14 +241,14 @@ public class GameManager : MonoBehaviour
         if (waveCountdownTime <= UIcountdownValue)
         {
             float volume = 0.6f;
-            AudioClip clip = GameManager.instance.dataDB.waveCountdown;
+            AudioClip clip = StateManager.instance.dataDB.waveCountdown;
             if (UIcountdownValue <= 0)
             {
                 volume = 1.0f;
-                clip = GameManager.instance.dataDB.startWave;
+                clip = StateManager.instance.dataDB.startWave;
             }
 
-            GameManager.instance.audioSource.PlayOneShot(clip, volume);
+            GameManager.instance.sfxSource.PlayOneShot(clip, volume);
             countdownText.text = UIcountdownValue.ToString();
             UIcountdownValue -= 1;
 
@@ -266,22 +268,22 @@ public class GameManager : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     public bool CheckEndGame(int waveNumber)
     {
-        if (waveNumber >= 31 && difficulty == Difficulty.Easy)
+        if (waveNumber >= 31 && StateManager.instance.difficulty == Difficulty.Easy)
         {
             EndGame(true);
             return true;
         }
-        else if (waveNumber >= 63 && difficulty == Difficulty.Normal)
+        else if (waveNumber >= 63 && StateManager.instance.difficulty == Difficulty.Normal)
         {
             EndGame(true);
             return true;
         }
-        else if (waveNumber >= 127 && difficulty == Difficulty.Hard)
+        else if (waveNumber >= 127 && StateManager.instance.difficulty == Difficulty.Hard)
         {
             EndGame(true);
             return true;
         }
-        else if (waveNumber >= 255 && difficulty == Difficulty.Impossible)
+        else if (waveNumber >= 255 && StateManager.instance.difficulty == Difficulty.Impossible)
         {
             EndGame(true);
             return true;
@@ -300,9 +302,9 @@ public class GameManager : MonoBehaviour
     {
         endGameUI.gameObject.SetActive(true);
         endGameText.text = victory ? "Victory!" : "Game Over";
-        waveEndText.text = String.Format("{0} - Wave {1}", difficulty.ToString(), currentWave.waveNumber);
-        waveEndText.color = dataDB.difficultyColors[difficulty];
-        endWaveBG.color = dataDB.difficultyColors[difficulty];
+        waveEndText.text = String.Format("{0} - Wave {1}", StateManager.instance.difficulty.ToString(), currentWave.waveNumber);
+        waveEndText.color = StateManager.instance.dataDB.difficultyColors[StateManager.instance.difficulty];
+        endWaveBG.color = StateManager.instance.dataDB.difficultyColors[StateManager.instance.difficulty];
 
         continueButton.gameObject.SetActive(false);
         if (showContinue && victory == false)
@@ -312,6 +314,38 @@ public class GameManager : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        // If victory award a trophy!!!
+        if (victory)
+        {
+            int trophyValue = 1;
+            if (continueCount == 0)
+            {
+                trophyValue = 3;
+            }
+            else if (continueCount > 0 && continueCount <= 5)
+            {
+                trophyValue = 2;
+            }
+
+            if (StateManager.instance.difficulty == Difficulty.Easy && StateManager.instance.playerData.easy <= trophyValue)
+            {
+                StateManager.instance.playerData = new PlayerData(trophyValue, StateManager.instance.playerData.normal, StateManager.instance.playerData.hard, StateManager.instance.playerData.impossible);
+            }
+            else if (StateManager.instance.difficulty == Difficulty.Normal && StateManager.instance.playerData.normal <= trophyValue)
+            {
+                StateManager.instance.playerData = new PlayerData(StateManager.instance.playerData.easy, trophyValue, StateManager.instance.playerData.hard, StateManager.instance.playerData.impossible);
+            }
+            else if(StateManager.instance.difficulty == Difficulty.Hard && StateManager.instance.playerData.hard <= trophyValue)
+            {
+                StateManager.instance.playerData = new PlayerData(StateManager.instance.playerData.easy, StateManager.instance.playerData.normal, trophyValue, StateManager.instance.playerData.impossible);
+            }
+            else if(StateManager.instance.difficulty == Difficulty.Impossible && StateManager.instance.playerData.impossible <= trophyValue)
+            {
+                StateManager.instance.playerData = new PlayerData(StateManager.instance.playerData.easy, StateManager.instance.playerData.normal, StateManager.instance.playerData.hard, trophyValue);
+            }
+            SaveSystem.SavePlayer(StateManager.instance.playerData);
+        }
     }
     
     public void MainMenu()
@@ -325,6 +359,71 @@ public class GameManager : MonoBehaviour
         gameEnded = false;
         endGameUI.gameObject.SetActive(false);
         localPlayer.Start();
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
+    //Options Functions
+    //-----------------------------------------------------------------------------------//
+    public void ToggleOptions()
+    {
+        optionsMenu.SetActive(!optionsMenu.activeSelf);
+        if (optionsMenu.activeSelf)
+        {
+            paused = true;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            foreach (Entity entity in GameObject.FindObjectsOfType<Entity>())
+            {
+                if (entity.sequence != null)
+                {
+                    entity.sequence.Pause();
+                }
+
+                if (entity.moonExplosionSequence != null)
+                {
+                    entity.moonExplosionSequence.Pause();
+                }
+            }
+        }
+        else
+        {
+            paused = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            foreach (Entity entity in GameObject.FindObjectsOfType<Entity>())
+            {
+                if (entity.sequence != null)
+                {
+                    entity.sequence.Play();
+                }
+
+                if (entity.moonExplosionSequence != null)
+                {
+                    entity.moonExplosionSequence.Play();
+                }
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------//
+
+    //-----------------------------------------------------------------------------------//
+    //List Shuffle
+    //-----------------------------------------------------------------------------------//
+    public List<int> Shuffle(List<int> list)
+    {
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = random.Next(n + 1);
+            int value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+        return list;
     }
     //-----------------------------------------------------------------------------------//
 

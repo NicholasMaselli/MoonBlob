@@ -10,7 +10,7 @@ public class EnemyIcon : MonoBehaviour
 
     public void Set(Enemy enemy, Color moonColor)
     {
-        SetEnemy(GameManager.instance.dataDB.enemySprites[enemy.entityData.entityName]);
+        SetEnemy(StateManager.instance.dataDB.enemySprites[enemy.entityData.entityName]);
         SetMoonColor(moonColor);
     }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 using TMPro;
 using DG.Tweening;
@@ -58,6 +59,14 @@ public class Entity : MonoBehaviour
     public float walkSoundTime = 0.4f;
     public float sprintSoundTime = 0.2f;
 
+    [Header("Visual Effect Variables")]
+    public GameObject explosionParticles;
+    public float explosionLifeTime = 1.0f;
+
+    [Header("Sequence Variables")]
+    public Sequence sequence;
+    public Sequence moonExplosionSequence;    
+
     //-----------------------------------------------------------------------------------//
     //Initialization and Update
     //-----------------------------------------------------------------------------------//
@@ -77,6 +86,7 @@ public class Entity : MonoBehaviour
     protected virtual void Update()
     {
         if (GameManager.instance.gameEnded) return;
+        if (GameManager.instance.paused) return;
 
         grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask, QueryTriggerInteraction.Ignore);
 
@@ -107,7 +117,7 @@ public class Entity : MonoBehaviour
             soundCountdown -= Time.deltaTime;
             if (soundCountdown <= 0.0f)
             {
-                GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobWalking, 0.35f);
+                GameManager.instance.sfxSource.PlayOneShot(StateManager.instance.dataDB.blobWalking, 0.35f);
                 if (sprinting)
                 {
                     soundCountdown = sprintSoundTime;
@@ -126,6 +136,8 @@ public class Entity : MonoBehaviour
 
     protected void FixedUpdate()
     {
+        if (GameManager.instance.gameEnded) return;
+        if (GameManager.instance.paused) return;
         Move();
     }
     //-----------------------------------------------------------------------------------//
@@ -156,7 +168,7 @@ public class Entity : MonoBehaviour
         if (!grounded) return;
         grounded = false;
 
-        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobJumping, 0.7f);
+        GameManager.instance.sfxSource.PlayOneShot(StateManager.instance.dataDB.blobJumping, 0.7f);
 
         // Apply jump forces
         entityRigidBody.AddForce(transform.up * entityData.jumpForce);
@@ -168,7 +180,7 @@ public class Entity : MonoBehaviour
         if (!readyToDash || (!dashLeft && !dashRight)) return;
         readyToDash = false;
 
-        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobJumping, 0.7f);
+        GameManager.instance.sfxSource.PlayOneShot(StateManager.instance.dataDB.blobJumping, 0.7f);
 
         Vector3 dashVector = Vector3.zero;
         if (dashLeft)
@@ -201,11 +213,11 @@ public class Entity : MonoBehaviour
 
     protected virtual void Shoot()
     {
-        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobShoot, 0.3f);
+        GameManager.instance.sfxSource.PlayOneShot(StateManager.instance.dataDB.blobShoot, 0.3f);
 
         GameObject bulletGO = Instantiate(bulletPrefab, shootOrigin.transform.position + (0.15f * shootOrigin.transform.forward), transform.rotation);
         Bullet bullet = bulletGO.GetComponent<Bullet>();
-        bullet.Initialize(this, entityData.bulletDamage, entityData.bulletSpeed, entityData.bulletLifeTime, gun.transform);
+        bullet.Initialize(this, entityData.bulletDamage, entityData.bulletSpeed, entityData.bulletLifeTime, gun.transform, false);
     }
     //-----------------------------------------------------------------------------------//
 
@@ -224,20 +236,23 @@ public class Entity : MonoBehaviour
         }
         else
         {
-            GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobHit, 0.3f);
+            GameManager.instance.sfxSource.PlayOneShot(StateManager.instance.dataDB.blobHit, 0.3f);
         }
 
         if (entityData.invinsibleAfterDamage)
         {
             // Flicker Material Color after getting hit to indicate invinsibility
             bool applyBaseColor = false;
-            Sequence sequence = DOTween.Sequence();
+            sequence = DOTween.Sequence();
             float invinsibilityTime = entityData.invinsibliltyTime;
             float timeStep = 0.1f;
+
+            List<Color> baseMaterialColors = new List<Color>();
             foreach (MeshRenderer meshRenderer in meshRenderers)
             {
                 Color baseColor = meshRenderer.material.color;
-                for (float i = 0.0f; i <= invinsibilityTime; i += timeStep)
+                baseMaterialColors.Add(baseColor);
+                for (float i = 0.0f; i < invinsibilityTime; i += timeStep)
                 {
                     if (!applyBaseColor)
                     {
@@ -252,7 +267,22 @@ public class Entity : MonoBehaviour
             }
 
             temporarilyInvinsible = true;
-            sequence.Play().OnComplete(ResetInvinsibility);
+            sequence.Play().OnComplete(() =>
+            {
+                ResetInvinsibility();
+                if (meshRenderers != null)
+                {
+                    int index = 0;
+                    foreach (MeshRenderer meshRenderer in meshRenderers)
+                    {
+                        if (meshRenderer != null)
+                        {
+                            meshRenderer.material.color = baseMaterialColors[index];
+                        }                        
+                        index += 1;
+                    }
+                }                
+            });
         }        
     }
 
@@ -267,7 +297,9 @@ public class Entity : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     protected virtual void Die()
     {
-        GameManager.instance.audioSource.PlayOneShot(GameManager.instance.dataDB.blobDie, 0.6f);
+        GameManager.instance.sfxSource.PlayOneShot(StateManager.instance.dataDB.blobDie, 0.6f);
+        GameObject explosion = Instantiate(explosionParticles, transform.position + (0.5f * transform.up), transform.rotation);
+        Destroy(explosion, explosionLifeTime);
         Destroy(this.gameObject);
     }
     //-----------------------------------------------------------------------------------//

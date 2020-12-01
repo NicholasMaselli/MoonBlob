@@ -7,7 +7,7 @@ public class Blurp : Enemy
     protected override void Die()
     {
         // Spawn 2 Peeps on death
-        GameManager.instance.dataDB.enemyPrefabs.TryGetValue("Peep", out GameObject peepPrefrab);
+        StateManager.instance.dataDB.enemyPrefabs.TryGetValue("Peep", out GameObject peepPrefrab);
         if (peepPrefrab != null)
         {
             int peepCount = 2;

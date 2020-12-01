@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class GravityAttractor : MonoBehaviour
 {
     public int moonId;
     public float gravitationalConstant = -5.0f;  //-9.81f;
     public Collider trigger;
+    public VisualEffect visualEffect;
 
     public Vector3 gravityDirection;
 

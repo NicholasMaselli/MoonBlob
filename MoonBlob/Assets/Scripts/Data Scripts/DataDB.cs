@@ -25,6 +25,10 @@ public class DataDB : ScriptableObject
     public AudioClip blobShoot;
     public AudioClip waveCountdown;
     public AudioClip startWave;
+    public AudioClip explosion;
+
+    [Header("Trophy Sprites")]
+    public List<Sprite> trophySprites = new List<Sprite>();
 
     public void Initialize()
     {

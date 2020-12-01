@@ -17,6 +17,9 @@ public class GravityBody : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.instance.gameEnded) return;
+        if (GameManager.instance.paused) return;
+
         if (gravityAttractor != null && gravityRigidBody != null)
         {
             gravityAttractor.Attract(gravityRigidBody);

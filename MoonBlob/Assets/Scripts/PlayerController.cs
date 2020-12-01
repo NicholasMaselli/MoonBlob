@@ -43,6 +43,7 @@ public class PlayerController : Entity
     protected override void Update()
     {
         if (GameManager.instance.gameEnded) return;
+        if (GameManager.instance.paused) return;
 
         GetPlayerInput();
         Look();

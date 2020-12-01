@@ -84,8 +84,11 @@ public class BetterButton : MonoBehaviour, IPointerClickHandler, IPointerUpHandl
     {
         if (interactable)
         {
-
-            audioSource.PlayOneShot(clickAudio, clickVolume);
+            if (audioSource != null)
+            {
+                audioSource.PlayOneShot(clickAudio, clickVolume);
+            }
+            
             OnClick.Invoke();
 
             if (keepActiveUntilClick)
@@ -122,7 +125,11 @@ public class BetterButton : MonoBehaviour, IPointerClickHandler, IPointerUpHandl
     {
         if (interactable && (!active || (active && !keepActive)))
         {
-            audioSource.PlayOneShot(hoverAudio, hoverVolume);
+            if (audioSource != null)
+            {
+                audioSource.PlayOneShot(hoverAudio, hoverVolume);
+            }
+            
             OnEnter.Invoke();
             SetHighlighted();
         }        

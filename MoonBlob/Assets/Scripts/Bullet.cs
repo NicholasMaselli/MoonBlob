@@ -16,6 +16,7 @@ public class Bullet : MonoBehaviour
     public int damage = 50;
     public float speed = 1.0f;
     public float lifeTime = 1.0f;
+    public bool heatSeeking = false;
 
     [Header("Graphics Variables")]
     public GameObject explosionParticles;
@@ -24,7 +25,7 @@ public class Bullet : MonoBehaviour
     //-----------------------------------------------------------------------------------//
     //Initialization and Update
     //-----------------------------------------------------------------------------------//
-    public void Initialize(Entity entity, int damage, float speed, float lifeTime, Transform gunTransform)
+    public void Initialize(Entity entity, int damage, float speed, float lifeTime, Transform gunTransform, bool heatSeeking)
     {
         this.entity = entity;
         this.damage = damage;
@@ -35,6 +36,9 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.instance.gameEnded) return;
+        if (GameManager.instance.paused) return;
+
         lifeTime -= Time.deltaTime;
         if (lifeTime <= 0.0f)
         {
@@ -42,6 +46,18 @@ public class Bullet : MonoBehaviour
             Destroy(explosion, explosionLifeTime);
             Destroy(gameObject);
         }
+    }
+
+    private void FixedUpdate()
+    {
+        if (heatSeeking == false) return;
+
+        transform.LookAt(GameManager.instance.localPlayer.transform, GameManager.instance.localPlayer.transform.up);
+
+        Vector3 direction = (GameManager.instance.localPlayer.transform.position - transform.position).normalized;
+        Vector3 velocity = direction * speed;
+
+        bulletRigidBody.velocity = velocity;
     }
     //-----------------------------------------------------------------------------------//
 
