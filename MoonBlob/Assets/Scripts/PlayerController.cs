@@ -118,11 +118,22 @@ public class PlayerController : Entity
     protected void Look()
     {
         // Rotate to look faster if holding down right mouse button;
-        float additionalRotation = 1.0f;
-        if (rotationSensitivity)
+        float additionalRotation = 0.4f;
+        if (Application.isEditor)
         {
-            additionalRotation = 3.0f;
+            additionalRotation = 1.0f;
+            if (rotationSensitivity)
+            {
+                additionalRotation = 3.0f;
+            }
         }
+        else
+        {
+            if (rotationSensitivity)
+            {
+                additionalRotation = 1.2f;
+            }
+        }        
 
         float horizontalLook = mouseHorizontal * sensitivity * Time.deltaTime * additionalRotation;
         float verticalLook = mouseVertical * sensitivity * Time.deltaTime * additionalRotation;
