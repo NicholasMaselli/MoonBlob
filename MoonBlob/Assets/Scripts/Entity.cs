@@ -23,6 +23,7 @@ public class Entity : MonoBehaviour
     protected bool dashLeft;
     protected bool dashRight;
     protected bool shoot;
+    protected float cameraExpand;
 
     [Header("Physics Variables")]
     public Rigidbody entityRigidBody;

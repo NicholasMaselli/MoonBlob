@@ -61,7 +61,7 @@ public class Bluub : Enemy
 
         base.DealDamage(damage);
 
-        // After Damage, teleport Broogr to a new spawn point
+        // After Damage, teleport Bluub to a new spawn point
         currentHits += 1;
         if (currentHits >= hitsBeforeTeleport)
         {

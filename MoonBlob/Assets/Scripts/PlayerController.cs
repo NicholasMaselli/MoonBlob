@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,10 @@ public class PlayerController : Entity
     public TextMeshProUGUI UIhealthText;
     public Image UIenergyBar;
     public TextMeshProUGUI UIenergyText;
-    
+
+    [Header("Camera Position")]
+    public int currentCameraPosition = 1;
+    public List<Vector2> cameraPositions;
 
     //-----------------------------------------------------------------------------------//
     //Initialization and Update
@@ -47,6 +51,7 @@ public class PlayerController : Entity
 
         GetPlayerInput();
         Look();
+        CameraPosition();
         base.Update();
 
         if (sprinting)
@@ -79,6 +84,8 @@ public class PlayerController : Entity
 
         shoot = Input.GetMouseButtonDown(0);
         rotationSensitivity = Input.GetMouseButton(1);
+
+        cameraExpand = Input.mouseScrollDelta.y;
 
         if (Input.GetButtonDown("Sprint") && entityData.energy > 0)
         {
@@ -148,6 +155,35 @@ public class PlayerController : Entity
         //Perform the rotations
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
         transform.Rotate(Vector3.up * yRotation);
+    }
+
+    protected void CameraPosition()
+    {
+        int newCameraPosition = currentCameraPosition;
+        if (cameraExpand > 0)
+        {
+            newCameraPosition += 1;
+        }
+        else if (cameraExpand < 0)
+        {
+            newCameraPosition -= 1;
+        }
+
+        if (newCameraPosition < 0)
+        {
+            newCameraPosition = 0;
+        }
+        else if (newCameraPosition > 4)
+        {
+            newCameraPosition = 4;
+        }
+        currentCameraPosition = newCameraPosition;
+
+        Vector3 camPos = cameraPositions[currentCameraPosition];
+        float yPos = camPos.x;
+        float zPos = camPos.y;
+
+        playerCamera.transform.localPosition = new Vector3(playerCamera.transform.localPosition.x, yPos, zPos);
     }
     //-----------------------------------------------------------------------------------//
 

@@ -5,17 +5,10 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 using TMPro;
-using DG.Tweening;
 
 public class HomeManager : MonoBehaviour
 {
     public static HomeManager instance;
-
-    [Header("Title Text")]
-    public TextMeshProUGUI titleText;
-    public Color startColor;
-    public Color endColor;
-    private bool isStartColor;
 
     [Header("Trophy Variables")]
     public BetterButton easyButton;
@@ -90,7 +83,6 @@ public class HomeManager : MonoBehaviour
         {
             StateManager.instance.playerData = new PlayerData(0, 0, 0, 0);
         }
-        InvokeRepeating("TextSequence", 0.0f, 3.0f);
     }
 
     private void Update()
@@ -115,21 +107,6 @@ public class HomeManager : MonoBehaviour
     public void Exit()
     {
         Application.Quit();
-    }
-
-    public void TextSequence()
-    {
-        Sequence sequence = DOTween.Sequence();
-        if (isStartColor)
-        {
-            sequence.Insert(0.0f, titleText.DOColor(endColor, 3.0f)).SetEase(Ease.Linear);
-        }
-        else
-        {
-            sequence.Insert(0.0f, titleText.DOColor(startColor, 3.0f)).SetEase(Ease.Linear);
-        }
-        sequence.Play();
-        isStartColor = !isStartColor;
     }
 
     public void RevealBlobs(PlayerData playerData)
